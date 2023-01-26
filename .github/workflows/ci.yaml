@@ -12,7 +12,16 @@ jobs:
       env:
         CODESPACES: true
     steps:
-      - uses: actions/checkout@v2
-      - run: ./install.sh
-      - name: chezmoi data
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install fish -y
+
+      - name: Test
+        run: ./install.sh
+
+      - name: chezmoi Data
         run: '"$HOME/.local/bin/chezmoi" data'
+
