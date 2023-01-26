@@ -47,5 +47,3 @@
 [init]
     templatedir = ~/.git-templates
 	defaultBranch = main
-[credential]
-	helper = "!f() { /home/vscode/.vscode-server/bin/e8a3071ea4344d9d48ef8a4df2c097372b0c5161/node /tmp/vscode-remote-containers-b434762ed5cc33e276e8c9996e9f92a9697b6761.js $*; }; f"
