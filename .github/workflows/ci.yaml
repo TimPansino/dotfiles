@@ -17,6 +17,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          sudo apt-get update -y
           sudo apt-get install fish -y
 
       - name: Test
