@@ -1,0 +1,124 @@
+set noswapfile
+set nowritebackup
+set pastetoggle=<F2>
+
+set backspace=indent,eol,start
+au FileType c setlocal comments-=:// comments+=f://
+
+map nu :set nu
+map no :set nonu
+
+set statusline=%F%m\ [FORMAT=%{&ff}]\ [%04l,%04v]\ [LASTMOD=%{strftime(\"%m/%d/%y\-\%H:%M\")}]
+set laststatus=2
+
+hi StatusLine term=reverse ctermfg=4 ctermbg=3
+
+" ALLOWS COMMANDS SUCH AS -- INSERT -- BE VIEWED IN BLUE COLOR (4)
+highlight ModeMsg cterm=bold ctermfg=4
+
+"execute pathogen#infect()
+
+"let g:gitgutter_sign_column_always = 1
+
+" Map Enter to Escape key
+inoremap jk <Esc>
+inoremap JK <Esc>
+
+" Remove search hilighting
+nnoremap <esc> :noh<return><esc>
+
+" Enable syntax highlighting
+:syntax on
+
+" Enable filetype-specific stuff
+filetype on
+filetype plugin on
+filetype indent on
+
+" Turn off all backwards compatible stuff
+set nocompatible
+
+" fix copy paste
+set paste
+
+" normal OS clipboard interaction
+set clipboard=unnamed
+
+" show (via cursor bounce) matching parens...
+set showmatch
+set matchtime=5
+
+" don't create a .bak file 
+set nobackup
+
+" disable digraphs complex character glyphs
+set nodg 
+
+" shows which mode you're in...fancy :-)
+set showmode
+
+" Always do case-sensitive searching
+set noignorecase
+
+" don't show unprintable chars as special chars
+set nolist
+
+" turn off wrapmargin
+set wrapmargin=0
+
+" set up auto line length wrap
+set textwidth=80
+
+" turn auto line length wrap off for now
+set formatoptions-=t
+
+" set number of lines before page moves when scrolling
+set scrolloff=15
+set sidescroll=1
+set sidescroll=10
+
+" Turn the ruler on, which displays the row and column numbers.
+set ruler
+set number
+
+" map page down
+map [6~ 
+
+" map page up
+map [5~ 
+
+" Decrease message size
+set shortmess=a
+
+" Highlight search patterns
+set hlsearch
+
+" Show partial match search pattern as you type it
+set incsearch
+
+" Enable command history
+set history=100
+
+" Change file searching behavior
+set wildmode=longest:list,full
+
+if has("mouse")
+  set mouse=a
+
+	set errorbells
+	set visualbell
+
+	set selectmode=mouse,key
+endif
+
+" Tab settings
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set ai
+set smartindent
+set cindent
+
+" Use 256 colours (Use this setting only if your terminal supports 256 colours)
+set t_Co=256

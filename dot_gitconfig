@@ -1,0 +1,51 @@
+[user]
+    name = Tim Pansino
+    email = timpansino@gmail.com
+    #name = newrelic
+    #email = opensource@newrelic.com
+
+[alias]
+    co = checkout
+    pl = pull
+    plr = pull --rebase
+    br = branch
+    mr = merge
+    mra = merge --abort
+    mrc = merge --continue
+    st = status
+    cm = commit
+    rs = reset
+    rh = reset --hard
+    rso = "!f() { git fetch origin; git reset '@{u}';}; f"
+    rb = rebase -i
+    rba = rebase --abort
+    rbc = rebase --continue
+    sw = switch
+    nb = checkout -b
+    cp = cherry-pick
+    ft = fetch --all --prune --force
+    fp = push --force-with-lease
+    pb = push -u origin HEAD
+    tags = tag -l
+    drop = reset HEAD^
+    hash = rev-parse HEAD
+    hist = log --pretty=format:'%C(yellow)[%ad]%C(reset) %C(green)[%h]%C(reset) | %C(red)%s %C(bold red){{%an}}%C(reset) %C(blue)%d%C(reset)' --graph --date=short
+    bump = commit --allow-empty -m 'Bump tests'
+    rekt = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-Initial commit}\");};f"
+#    merged = "!f() { git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <$(git branch -vv | grep origin) | awk '{print $1}' ;};f"
+#    merged = "!f() { git fetch -p ; git branch -r | awk \"{print $1}\" | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk \"{print $1}\" };f"
+#    prune-merged = "!f() { git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -d; };f"
+    pr = "!f() { git fetch -fu ${2:-$(git remote |grep ^upstream || echo origin)} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
+    pr-clean = "!git for-each-ref refs/heads/pr/* --format=\"%(refname)\" | while read ref ; do branch=${ref#refs/heads/} ; git branch -D $branch ; done"
+[core]
+	autocrlf = input
+	safecrlf = true
+	excludesfile = ~/.gitignore
+	editor = vim
+[pull]
+    rebase = false
+[init]
+    templatedir = ~/.git-templates
+	defaultBranch = main
+[credential]
+	helper = "!f() { /home/vscode/.vscode-server/bin/e8a3071ea4344d9d48ef8a4df2c097372b0c5161/node /tmp/vscode-remote-containers-b434762ed5cc33e276e8c9996e9f92a9697b6761.js $*; }; f"

@@ -1,0 +1,234 @@
+# Shorthand
+alias c="clear"
+alias ..="cd .."
+alias .="pwd && ls -h"
+
+# Python Shorthand
+alias venv="python -m venv"
+alias pipreq="pip install -r requirements.txt" 
+
+# Docker Shorthand
+alias dk="docker"
+alias dc="docker-compose"
+alias dr="docker-compose down && docker-compose up -d"
+alias drl="dc down && dc up -d --build && dc logs -f"
+alias dl="dc logs -f"
+alias dkip="docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
+alias mr="make down && make up"
+alias mrl="make down && make up && make logs"
+alias ml="make logs"
+
+# Debian Shorthand
+alias update="sudo apt update -y && sudo apt upgrade -y && sudo apt full-upgrade -y && sudo apt autoremove -y"
+alias apt="sudo apt"
+alias apt-get="sudo apt-get"
+alias halt="sudo halt"
+alias reboot="sudo reboot"
+alias rand_secret="dd if=/dev/urandom bs=1k count=1 2>/dev/null | base64 --wrap=0 | tr -dc 'a-zA-Z0-9' | head -c"
+
+# Other Shorthand
+alias curltime="curl -w \"@$HOME/.curl-format.txt\" -o /dev/null -s "
+
+
+# Path Settings
+if command -v thefuck; then
+    thefuck --alias | source
+fi
+
+if [[ -d ~/.local/bin ]]; then
+    export PATH="$PATH:~/.local/bin"
+fi
+
+# Custom functions
+function cd() {
+    builtin cd "$@" && pwd && ls -h
+}
+
+function srv() {
+  cd /srv
+  if [["$(id -u)" -ne 0]]; then
+    sudo su
+  fi
+}
+
+function pidport(){
+    if [[ -z "$1" ]]; then
+        return 1
+    fi
+    lsof -n -i4TCP:"$1" | grep LISTEN
+}
+
+function zipit(){
+    if [[ -z "$1" ]]; then
+        return 1
+    fi
+    zip "$1".zip "$1"/*
+}
+
+# Create venv
+function venvi() {
+    PYTHON_VERSION="$1"
+
+    # Deactivate existing venv
+    if command -v deactivate; then
+        deactivate
+    fi
+
+    # Remove existing venv folder
+    if [[ -e .venv ]]; then
+        rm -rf .venv
+    fi
+
+    # Set python executable
+    if [[ -n "$PYTHON_VERSION" ]]; then
+        if [[ "$PYTHON_VERSION" =~ ^[0-9]+.+ ]]; then
+            # string starts with a digit
+            PYTHON="python$PYTHON_VERSION"
+        else
+            PYTHON="$PYTHON_VERSION"
+        fi
+    else
+        PYTHON="python"
+    fi
+
+    if ! command -v "$PYTHON"; then
+        echo "Executable not found: $PYTHON" >&2
+        return 1
+    fi
+
+    # Create venv
+    ($PYTHON -m venv .venv || $PYTHON -m virtualenv .venv) && venva
+}
+
+# Activate venv
+function venva() {
+    VENV_DIR="$1"
+
+    if [[ -z "$VENV_DIR" ]]; then
+        if [[ -d venv ]]; then
+            source ./venv/bin/activate
+        elif [[ -d .venv ]]; then
+            source ./.venv/bin/activate
+        else
+            echo "Cannot find virtual environment directory."
+            return 1
+        fi
+    else
+        source $VENV_DIR/bin/activate
+    fi
+}
+
+# # Activate tox venv
+# function toxva -a TOX_VENV_DIR
+#     if test ! -d ./.tox
+#         echo "No .tox directory found." 1>&2
+#         return 1
+#     else if test -z $TOX_VENV_DIR
+#         echo "Usage: toxva <environment>" 1>&2
+#         tox -l
+#         return 1
+#     else if test ! -d ./.tox/$TOX_VENV_DIR
+#         echo "Environment $TOX_VENV_DIR not found. Has it been created yet?" 1>&2
+#         ls ./.tox/
+#         return 1
+#     else
+#         source ./.tox/$TOX_VENV_DIR/bin/activate.fish
+#         export PYTHONPATH=tests/
+#         unset NEW_RELIC_CONFIG_FILE
+#         pip install -e .
+#     end
+# end
+
+# # Run tox and view coverage
+# function toxcov -a TOX_ENV -a PORT
+#     if test -z $TOX_ENV
+#         echo "Usage: toxcov [environment] [port]"
+#     else
+#         tox -e $TOX_ENV
+#         TOX_COVERAGE_DIR="./.tox/$TOX_ENV/htmlcov"
+#         if test -d $TOX_COVERAGE_DIR
+#             python -m http.server --bind=localhost -d $TOX_COVERAGE_DIR $PORT
+#         end
+#     end
+# end
+
+# # Run tox and diff coverage
+# function toxcovdiff -a TOX_ENV1 -a TOX_ENV2 -a PORT
+#     COV_DIR="./cov"
+#     COV_FILE1=".tox/$TOX_ENV1/coverage.xml"
+#     COV_FILE2=".tox/$TOX_ENV2/coverage.xml"
+#     test -z "$PORT" && PORT=8000 
+#     test "$PORT" -gt 0 || echo "Port not set."
+
+#     # Check for proper usage
+#     if test -z $TOX_ENV2
+#         echo "Usage: toxcovdiff <enviornment1> <environment2>" 
+#         return 1
+#     end
+
+#     # Run tox for any missing environments
+#     echo "Running coverage..."
+#     if test ! -f $COV_FILE1
+#         tox -e $TOX_ENV1 || return
+#     end
+#     if test ! -f $COV_FILE2
+#         tox -e $TOX_ENV2 || return
+#     end
+
+#     # Clean out old coverage dir
+#     if test -d $COV_DIR
+#         rm -rf $COV_DIR
+#     end
+
+#     # Copy all coverage files into new coverage dir
+#     echo "Copying coverage files..."
+#     mkdir -p $COV_DIR
+#     echo "*" > $COV_DIR/.gitignore
+#     cp -r ".tox/$TOX_ENV1/htmlcov" "$COV_DIR/htmlcov_$TOX_ENV1" || return
+#     cp -r ".tox/$TOX_ENV2/htmlcov" "$COV_DIR/htmlcov_$TOX_ENV2" || return
+#     cp "$COV_FILE1" "$COV_DIR/$TOX_ENV1.xml" || return
+#     cp "$COV_FILE2" "$COV_DIR/$TOX_ENV2.xml" || return
+
+#     # Resetting variables
+#     COV_FILE1="$COV_DIR/$TOX_ENV1.xml"
+#     COV_FILE2="$COV_DIR/$TOX_ENV2.xml"
+
+#     # Sedding coverage files to rename source files
+#     echo "Sedding coverage files..."
+#     sed -i ".b" "s/\.tox.*site-packages.//g" $COV_FILE1
+#     sed -i ".b" "s/\.tox.*site-packages.//g" $COV_FILE2
+#     rm $COV_DIR/*.b
+
+#     # Run diff on files
+#     echo "Running diff..."
+#     echo "$COV_FILE1 $COV_FILE2"
+#     DIFF_LINE_CT=(diff -y --suppress-common-lines $COV_FILE1 $COV_FILE2 | wc -l)
+#     if test "$DIFF_LINE_CT" -le 1
+#         echo "Coverage is identical. Skipping server."
+#         return 0
+#     else if test "$PORT" -gt 0
+#         pycobertura diff \
+#             -s1 ".tox/$TOX_ENV1/" \
+#             -s2 ../../ \
+#             $COV_FILE1 $COV_FILE2 \
+#             -f html --output "$COV_DIR/diff.html"
+
+#         # Start http server
+#         echo "Starting http server..."
+#         python -m http.server --bind=localhost -d "$COV_DIR" "$PORT"
+#         return 0
+#     else
+#         echo "Coverage differs and server disabled. Exiting."
+#         return 1
+#     end
+#     return 0  # catch all
+# end
+
+function mega-linter () {
+    BRANCH=(git rev-parse --abbrev-ref HEAD)
+    if [[ -e report/mega-linter.log ]]; then
+        rm -rf report
+    fi
+    /usr/local/bin/mega-linter-runner "$@"
+    git checkout -m $BRANCH
+}
