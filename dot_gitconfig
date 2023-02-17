@@ -28,7 +28,8 @@
     pb = push -u origin HEAD
     tags = tag -l
     drop = reset HEAD^
-    hash = rev-parse HEAD
+    hash = rev-parse ${1:-HEAD}
+    sha = rev-parse ${1:-HEAD}
     hist = log --pretty=format:'%C(yellow)[%ad]%C(reset) %C(green)[%h]%C(reset) | %C(red)%s %C(bold red){{%an}}%C(reset) %C(blue)%d%C(reset)' --graph --date=short
     bump = commit --allow-empty -m 'Bump tests'
     rekt = "!f(){ git reset $(git commit-tree HEAD^{tree} -m \"${1:-Initial commit}\");};f"
