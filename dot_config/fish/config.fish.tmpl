@@ -9,8 +9,8 @@ alias pipreq="pip install -r requirements.txt"
 
 # Docker Shorthand
 alias dk="docker"
-alias dc="docker-compose"
-alias dr="docker-compose down; and docker-compose up -d"
+alias dc="docker compose"
+alias dr="docker compose down; and docker compose up -d"
 alias drl="dc down; and dc up -d --build; and dc logs -f"
 alias dl="dc logs -f"
 alias dkip="docker inspect -f '\{\{range.NetworkSettings.Networks\}\}\{\{.IPAddress\}\}\{\{end\}\}'"
@@ -126,6 +126,7 @@ function venva -a VENV_DIR
     end
 end
 
+{{ if .chezmoi.config.data.machine.work_laptop -}}
 # Create and activate tox venv
 function toxeva -a TOX_ENV
     if test -z $TOX_ENV
@@ -133,15 +134,14 @@ function toxeva -a TOX_ENV
         tox -l
         return 1
     else
-        tox -e $TOX_ENV --notest --develop
+        tox -e $TOX_ENV --notest
         source ./.tox/$TOX_ENV/bin/activate.fish
-        set -gx PYTHONPATH tests/
+        set -gx PYTHONPATH ./tests/
         set -u NEW_RELIC_CONFIG_FILE
         pip install -e .
     end
 end
 
-{{ if .chezmoi.config.data.machine.work_laptop -}}
 # Activate tox venv
 function toxva -a TOX_VENV_DIR
     if test ! -d ./.tox
@@ -157,7 +157,7 @@ function toxva -a TOX_VENV_DIR
         return 1
     else
         source ./.tox/$TOX_VENV_DIR/bin/activate.fish
-        set -gx PYTHONPATH tests/
+        set -gx PYTHONPATH ./tests/
         set -u NEW_RELIC_CONFIG_FILE
         pip install -e .
     end
@@ -253,9 +253,6 @@ set MEGA_LINTER_RUNNER_PATH (which mega-linter-runner)
 if test -n "$MEGA_LINTER_RUNNER_PATH"
     function mega-linter
         set BRANCH (git rev-parse --abbrev-ref HEAD)
-        if test -e report/mega-linter.log
-            rm -rf report
-        end
         $MEGA_LINTER_RUNNER_PATH $argv
         git checkout -m $BRANCH
     end

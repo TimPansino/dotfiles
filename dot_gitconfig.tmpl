@@ -2,7 +2,7 @@
     name = Tim Pansino
     email = timpansino@gmail.com
 {{- if .chezmoi.config.data.machine.work_laptop }}
-    signingkey = 3DA8E22D
+    signingkey = 6F668B07D15E2B62
     #name = newrelic
     #email = opensource@newrelic.com
 {{- end }}
@@ -18,7 +18,7 @@
     st = status
     cm = commit
     rs = reset
-    rh = reset --hard
+    rsh = reset --hard
     rso = "!f() { git fetch origin; git reset '@{u}';}; f"
     rb = rebase -i
     rba = rebase --abort
@@ -34,11 +34,16 @@
     hidden = ! git ls-files -v | grep '^h' | cut -c3-
     tags = tag -l
     drop = reset HEAD^
-    hash = rev-parse ${1:-HEAD}
-    sha = rev-parse ${1:-HEAD}
+    hash = "!git rev-parse ${1:-HEAD}"
+    sha = hash
     bump = commit --allow-empty -m 'Bump tests'
+    veryclean = clean -fXd
+    vclean = clean -fXd
     rekt = "!f(){ git checkout --orphan rekt && git commit -m 'Initial commit';};f"
     hist = log --pretty=format:'%C(yellow)[%ad]%C(reset) %C(green)[%h]%C(reset) | %C(red)%s %C(bold red){{`{{%an}}`}}%C(reset) %C(blue)%d%C(reset)' --graph --date=short
+    orphans = reflog --all --date-order
+    resign = "!f(){ git rebase --exec 'git commit --amend --no-edit -n -S' -i ${1:-main};};f"
+    gc-all = -c gc.reflogExpire=0 -c gc.reflogExpireUnreachable=0 -c gc.rerereresolved=0 -c gc.rerereunresolved=0 -c gc.pruneExpire=now gc
 
 [core]
     autocrlf = input
@@ -58,5 +63,5 @@
 	program = /opt/homebrew/bin/gpg
 
 [commit]
-	gpgsign = true
+	gpgsign = false
 {{ end }}

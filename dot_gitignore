@@ -5,6 +5,9 @@
 # Secrets
 .env
 
+# PreCommit
+.pre-commit-config.yaml
+
 # Python GitIgnore
 # Byte-compiled / optimized / DLL files
 __pycache__/
