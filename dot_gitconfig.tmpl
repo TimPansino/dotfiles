@@ -36,6 +36,7 @@
     drop = reset HEAD^
     hash = "!git rev-parse ${1:-HEAD}"
     sha = hash
+    merged = branch -a --merged
     bump = commit --allow-empty -m 'Bump tests'
     veryclean = clean -fXd
     vclean = clean -fXd
