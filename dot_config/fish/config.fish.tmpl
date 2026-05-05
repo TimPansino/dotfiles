@@ -24,6 +24,7 @@ alias apt="sudo apt"
 alias apt-get="sudo apt-get"
 alias halt="sudo halt"
 alias reboot="sudo reboot"
+alias killbg="kill -9 (jobs -p)"
 alias rand_secret="dd if=/dev/urandom bs=1k count=1 2>/dev/null | base64 {{ if eq .chezmoi.os "linux" }}--wrap=0{{ end }} | tr -dc 'a-zA-Z0-9' | head -c"
 
 # Other Shorthand
@@ -41,7 +42,7 @@ set -g GPG_TTY (tty)
 
 # Path Settings
 if test -d ~/.local/bin 
-    set PATH $PATH ~/.local/bin
+    fish_add_path -m ~/.local/bin
 end
 
 # Source local config
@@ -80,43 +81,24 @@ function venvi -a PYTHON_VERSION
         deactivate
     end
 
-    # Remove existing venv folder
-    if test -e .venv
-        rm -rf .venv
-    end
-
-    # Set python executable
-    if test -n "$PYTHON_VERSION"
-        if string match -qr '^\d' "$PYTHON_VERSION"
-            # string starts with a digit
-            set PYTHON "python$PYTHON_VERSION"
-        else
-            set PYTHON "$PYTHON_VERSION"
-        end
-    else
-        set PYTHON "python"
-    end
-
-    if ! type -q "$PYTHON"
-        echo "Executable not found: $PYTHON" >&2
-        return 1
-    end
-
     # Create venv
     begin
-        $PYTHON -m venv .venv
-        or $PYTHON -m virtualenv .venv
-    end
-    and venva
+        if test -z $PYTHON_VERSION
+            uv venv --clear
+        else
+            uv venv --clear --python=$PYTHON_VERSION
+        end
+    # Activate it after it's created successfully
+    end; and venva
 end
 
 # Activate venv
 function venva -a VENV_DIR
     if test -z $VENV_DIR
-        if test -d venv
-            source ./venv/bin/activate.fish
-        else if test -d .venv
+        if test -d .venv
             source ./.venv/bin/activate.fish
+        else if test -d .env
+            source ./venv/bin/activate.fish
         else
             echo "Cannot find virtual environment directory."
             return 1
@@ -253,6 +235,9 @@ set MEGA_LINTER_RUNNER_PATH (which mega-linter-runner)
 if test -n "$MEGA_LINTER_RUNNER_PATH"
     function mega-linter
         set BRANCH (git rev-parse --abbrev-ref HEAD)
+        if test -e megalinter-reports/mega-linter.log
+            rm -rf megalinter-reports
+        end
         $MEGA_LINTER_RUNNER_PATH $argv
         git checkout -m $BRANCH
     end
