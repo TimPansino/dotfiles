@@ -8,6 +8,9 @@
 # PreCommit
 .pre-commit-config.yaml
 
+# Git Worktrees
+.worktrees/
+
 # Python GitIgnore
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -150,3 +153,5 @@ cython_debug/
 
 # Golang
 go.sum
+
+**/.claude/settings.local.json
